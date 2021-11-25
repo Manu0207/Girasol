@@ -1,0 +1,85 @@
+
+#include <Servo.h>
+Servo ServH;
+int ServHor = 0;
+int ServHorLimitHigh = 160;
+int ServHorLimitLow = 20;
+
+Servo ServVert;
+int servov = 0;
+int servovLimitHigh = 160;
+int servovLimitLow = 20;
+int ldrtopl = 2;
+int ldrtopr = 1;
+int ldrbotl = 3;
+int ldrbotr = 0;
+
+void setup()
+{
+    ServH.attach(10);
+    ServH.write(0);
+    ServVert.attach(9);
+    ServVert.write(0);
+    delay(500);
+}
+
+void loop()
+{
+    ServHor = ServH.read();
+    servov = ServVert.read();
+    int topl = analogRead(ldrtopl);
+    int topr = analogRead(ldrtopr);
+    int botl = analogRead(ldrbotl);
+    int botr = analogRead(ldrbotr);
+    int avgtop = (topl + topr)/2;
+    int avgbot = (botl + botr)/2;
+    int avgleft = (topl + botl)/2;
+    int avgright = (topr + botr)/2;
+
+    if (avgtop < avgbot)
+    {
+        ServVert.write(servov + 1);
+        if (servov > servovLimitHigh)
+        {
+            servov = servovLimitHigh;
+        }
+        delay(10);
+    }
+    else if (avgbot < avgtop)
+    {
+        ServVert.write(servov - 1);
+        if (servov < servovLimitLow)
+        {
+            servov = servovLimitLow;
+        }
+        delay(10);
+    }
+    else
+    {
+        ServVert.write(servov);
+    }
+
+    if (avgleft > avgright)
+    {
+        ServH.write(ServHor + 1);
+        if (ServHor > ServHorLimitHigh)
+        {
+            ServHor = ServHorLimitHigh;
+        }
+        delay(10);
+    }
+    else if (avgright > avgleft)
+    {
+        ServH.write(ServHor - 1);
+        if (ServHor < ServHorLimitLow)
+        {
+            ServHor = ServHorLimitLow;
+        }
+        delay(10);
+    }
+    else
+    {
+        ServH.write(ServHor);
+    }
+    delay(50);
+}
